@@ -1,0 +1,164 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hospital Appointment System</title>
+  <link rel="stylesheet" href="frist.css" />
+</head>
+<body>
+  <!-- Entrance Screen -->
+  <div id="entranceScreen" class="entrance">
+    <div class="entrance-content">
+      <h1>🏥 Welcome to Hospital Appointment System</h1>
+      <p>Manage Patients, Doctors, Appointments, and Insights</p>
+      <select id="userRole">
+        <option value="">Select Role</option>
+        <option value="patient">Patient</option>
+        <option value="doctor">Doctor</option>
+        <option value="admin">Hospital Admin</option>
+      </select>
+      <button onclick="enterAsRole()">Enter System</button>
+    </div>
+  </div>
+
+  <!-- Main Application Dashboard -->
+  <div class="dashboard hidden" id="mainApp">
+    <aside class="sidebar">
+      <h2 id="dashboardTitle">Dashboard</h2>
+      <ul id="navMenu">
+        <!-- Admin Routes -->
+        <li class="role-admin" onclick="showSection('hospitalStats')">📈 Hospital Dashboard</li>
+        <li class="role-admin" onclick="showSection('hospital')">🏥 Manage Hospital Details</li>
+        
+        <!-- Doctor Routes -->
+        <li class="role-doctor" onclick="showSection('doctorStats')">💼 Doctor Dashboard</li>
+        <li class="role-doctor" onclick="showSection('doctor-association')">➕ Manage Associations</li>
+        
+        <!-- Patient Routes -->
+        <li class="role-patient" onclick="showSection('booking')">📅 Book Appointment</li>
+        <li class="role-patient" onclick="showSection('patientHistory')">📒 My Appointments</li>
+        
+        <!-- Common Route -->
+        <li onclick="goHome()">🚪 Logout & Go Home</li>
+      </ul>
+    </aside>
+
+    <main class="content">
+      <!-- ===== PATIENT LOGIN/REGISTER SECTION (No changes) ===== -->
+      <section id="patient" class="page hidden">
+        <h2>Patient Portal</h2>
+        <form id="patientLoginForm">
+            <h3>Login as Existing Patient</h3>
+            <input name="uniqueId" placeholder="Enter Your Unique ID (Aadhar/Passport)" required />
+            <button type="submit">Login</button>
+        </form>
+        <form id="patientForm">
+          <h3>Register as a New Patient</h3>
+          <input name="name" placeholder="Patient Name" required />
+          <input name="uniqueId" placeholder="Unique ID (Aadhar/Passport)" required />
+          <input type="date" name="dob" required />
+          <select name="gender" required>
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+          <button type="submit">Register</button>
+        </form>
+      </section>
+
+      <!-- ===== DOCTOR LOGIN/REGISTER SECTIONS (No changes) ===== -->
+      <section id="doctor" class="page hidden">
+        <h2>Doctor Portal</h2>
+        <form id="doctorLoginForm">
+            <h3>Login as Existing Doctor</h3>
+            <input name="doctorId" placeholder="Enter Your Doctor ID" required />
+            <button type="submit">Login</button>
+        </form>
+        <form id="doctorForm">
+          <h3>Register as a New Doctor</h3>
+          <input name="doctorId" placeholder="Create a Doctor ID (e.g., doc101)" required />
+          <input name="name" placeholder="Name" required />
+          <input name="qualifications" placeholder="Qualifications (e.g., MBBS, MD)" required />
+          <input name="specializations" placeholder="Specializations (comma separated)" required />
+          <input type="number" name="experience" placeholder="Years of Experience" required />
+          <button type="submit">Register</button>
+        </form>
+      </section>
+
+      <!-- ===== ADMIN/HOSPITAL LOGIN/REGISTER SECTIONS (Button text change) ===== -->
+      <section id="hospital" class="page hidden">
+        <h2>Hospital Admin Portal</h2>
+        <form id="hospitalLoginForm">
+            <h3>Login as Hospital Admin</h3>
+            <input name="name" placeholder="Enter Your Hospital Name" required />
+            <button type="submit">Login</button>
+        </form>
+        <form id="hospitalForm">
+          <h3 id="hospitalFormTitle">Register a New Hospital</h3>
+          <input name="name" placeholder="Hospital Name" required />
+          <input name="location" placeholder="Location" required />
+          <input name="departments" placeholder="Departments (comma separated)" required />
+          <button type="submit" id="hospitalSubmitButton">Register</button>
+        </form>
+      </section>
+      
+      <!-- Other sections remain the same -->
+      <section id="doctor-association" class="page hidden">
+          <h2>Associate with Hospital</h2>
+          <p>Once you are logged in, manage your hospital associations here.</p>
+          <form id="associationForm">
+              <select name="hospitalId" id="assocHospitalSelect" required>
+                  <option value="">Select Hospital to Associate With</option>
+              </select>
+              <input type="number" name="fee" placeholder="Consultation Fee for this Hospital" required>
+              <input name="slots" placeholder="Add Availability Slot (e.g., 2024-05-20 10:00)" required>
+              <button type="submit">Add/Update Association and Slot</button>
+          </form>
+          <h3>My Current Associations</h3>
+          <div id="doctorAssociationList" class="data-list"></div>
+      </section>
+
+      <section id="booking" class="page hidden">
+        <h2>Book Appointment</h2>
+        <form id="bookingForm">
+          <p id="patientBookingInfo" class="fee-display"></p>
+          <select name="specialization" id="specFilter" onchange="updateBookingFilters()">
+            <option value="">Filter by Specialization</option>
+          </select>
+          <select name="hospital" id="hospitalFilter" onchange="updateBookingFilters()">
+            <option value="">Filter by Hospital</option>
+          </select>
+          <select name="doctor" id="doctorFilter" onchange="populateSlots()">
+            <option value="">Select Doctor</option>
+          </select>
+          <select name="slot" id="slotFilter" onchange="displayFee()">
+            <option value="">Select Time Slot</option>
+          </select>
+          <p id="feeDisplay" class="fee-display"></p>
+          <button type="submit">Confirm Booking</button>
+        </form>
+        <h3>Upcoming Appointments</h3>
+        <div id="bookingSummary" class="data-list"></div>
+      </section>
+
+      <section id="hospitalStats" class="page hidden">
+        <h2>Hospital Admin Dashboard</h2>
+        <div id="hospitalSummary" class="data-list"></div>
+      </section>
+
+      <section id="doctorStats" class="page hidden">
+        <h2>Doctor Dashboard</h2>
+        <div id="doctorBreakdown" class="data-list"></div>
+      </section>
+
+      <section id="patientHistory" class="page hidden">
+        <h2>My Consultation History</h2>
+        <div id="patientConsultations" class="data-list"></div>
+      </section>
+    </main>
+  </div>
+  <script src="frist.js"></script>
+</body>
+</html>
